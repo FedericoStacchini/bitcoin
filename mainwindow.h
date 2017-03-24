@@ -20,6 +20,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    int timerId;
+
+protected:
+    void timerEvent(QTimerEvent *event);
 };
 
 #endif // MAINWINDOW_H

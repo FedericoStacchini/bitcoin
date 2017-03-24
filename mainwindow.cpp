@@ -17,12 +17,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    timerId = startTimer(10000);
 }
 
 MainWindow::~MainWindow()
 {
+    killTimer(timerId);
     delete ui;
 }
+
 QJsonObject sendRequest() {
 
     // create custom temporary event loop on stack
@@ -60,6 +63,7 @@ QJsonObject sendRequest() {
 
 void MainWindow::on_pushButton_clicked()
 {
+    qDebug() << "manual Update...";
     QJsonObject jsonObj = sendRequest();
     ui->label->setText("Time:" + QDateTime::fromTime_t(jsonObj["timestamp"].toString().toULongLong()).toString("hh:mm:ss"));
     ui->label_2->setText("Volume:" + jsonObj["volume"].toString());
@@ -71,7 +75,24 @@ void MainWindow::on_pushButton_clicked()
     ui->label_8->setText("Bid:"+ jsonObj["bid"].toString());
     ui->label_9->setText("Vwap:" + jsonObj["vwap"].toString());
 
-    ui->statusBar->showMessage(QDate::currentDate().toString("dd/MM/yyyy") + " " + QTime::currentTime().toString("hh:mm:ss"));
+    ui->statusBar->showMessage("manual " + QDate::currentDate().toString("dd/MM/yyyy") + " " + QTime::currentTime().toString("hh:mm:ss"));
+}
+
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+    qDebug() << "auto Update...";
+    QJsonObject jsonObj = sendRequest();
+    ui->label->setText("Time:" + QDateTime::fromTime_t(jsonObj["timestamp"].toString().toULongLong()).toString("hh:mm:ss"));
+    ui->label_2->setText("Volume:" + jsonObj["volume"].toString());
+    ui->label_3->setText("High:" + jsonObj["high"].toString());
+    ui->label_4->setText("Low:" + jsonObj["low"].toString());
+    ui->label_5->setText("Open:" + jsonObj["open"].toString());
+    ui->label_6->setText("Last:" + jsonObj["last"].toString());
+    ui->label_7->setText("Ask:" + jsonObj["ask"].toString());
+    ui->label_8->setText("Bid:"+ jsonObj["bid"].toString());
+    ui->label_9->setText("Vwap:" + jsonObj["vwap"].toString());
+
+    ui->statusBar->showMessage("auto " + QDate::currentDate().toString("dd/MM/yyyy") + " " + QTime::currentTime().toString("hh:mm:ss"));
 }
 
 
